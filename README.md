@@ -1,91 +1,73 @@
-# NEOX : Networked Engine & Optimization eXchange, A Distributed Neural Re-Training & Code Generation Engine
+# KODA: Kernelized Optimization & Deterministic Architecture
+### A Distributed Neural Re-Synthesis & Algorithmic Generation Engine
 
 ## Intended Purpose
 
-NEOX is designed as a distributed neural re-training and code generation engine for large-scale, algorithmically grounded models. Its primary objective is to enable efficient retraining, structural analysis, and deterministic inference over massive parameter spaces while preserving theoretical guarantees on optimization stability and computational complexity.
+**KODA** is a high-performance distributed engine engineered for the recursive re-training and structural synthesis of algorithmically grounded models. The architecture is optimized for execution over high-dimensional parameter manifolds, facilitating deterministic inference and structural analysis while maintaining rigorous theoretical bounds on optimization stability and computational overhead.
 
-The system integrates topology-aware distributed training, second-order optimization (K-FAC), and hypergraph-based dataset synthesis to produce models that are not only statistically performant but structurally coherent. Inference mechanisms incorporate contrastive penalization to reduce degeneration, while formal asymptotic verification (Akra–Bazzi) ensures generated recursive programs satisfy provable complexity bounds.
+The framework synchronizes topology-aware distributed training protocols with second-order curvature approximations and hypergraph-based dataset distillation. This ensures that synthesized models exhibit both statistical convergence and structural integrity. The system utilizes contrastive penalization within its decoding phase to mitigate autoregressive stochastic drift, while formal asymptotic verification via the **Akra–Bazzi** method ensures that generated recursive artifacts comply with provable complexity constraints.
 
-NEOX is intended for:
+**KODA is architected for:**
 
-- Large-scale model retraining across distributed GPU clusters
+* **Massive-Scale Neural Synthesis**: Orchestrating model refinement across high-bandwidth distributed GPU clusters.
+* **Provable Algorithmic Generation**: Synthesizing code structures with formal complexity and structural guarantees.
+* **Topological Optimization Research**: Investigating manifold-aware training regimes and non-Euclidean embedding spaces.
+* **Hybrid Objective Frameworks**: Implementing synchronized Cross-Entropy (CE), Reinforcement Learning (RL), and Adversarial (GAN) training cycles for structured logic outputs.
 
-- Algorithmic code generation with structural and complexity guarantees
+The platform enforces strict memory efficiency and deterministic execution across distributed nodes, providing mathematically grounded validation for every generated artifact. By unifying distributed systems theory, formal program synthesis, and graph-theoretical analysis, KODA provides a robust environment for the development of the next generation of logically consistent AI systems.
 
-- Research into topology-informed optimization and manifold-aware training
-
-- Experimental hybrid CE–RL–GAN training regimes for structured outputs
-
-The platform prioritizes memory efficiency, deterministic behavior under distributed execution, and mathematically grounded validation of generated artifacts.It also uses a decoding method to prevent the models from giving bad answers. The system can even prove that the models will work correctly which is very important for computer systems.
-
-The NEOX system is designed for researchers who want to experiment with models. It is also designed for computer clusters that can handle a lot of data. NEOX brings together a few areas of computer science like distributed systems, math and program synthesis to create a unified system, for training models. The NEOX system is very powerful. Can help researchers create better models.
+---
 
 ## Table of Contents
 1. [System Architecture & Distributed Topology](#1-system-architecture--distributed-topology)
-2. [Optimization Manifold & K-FAC](#2-optimization-manifold--k-fac)
-3. [Epistemological Dataset Synthesis & Topological Embeddings](#3-epistemological-dataset-synthesis--topological-embeddings)
+2. [Optimization Manifold & Curvature Approximation](#2-optimization-manifold--curvature-approximation)
+3. [Epistemological Synthesis & Topological Embeddings](#3-epistemological-synthesis--topological-embeddings)
 4. [Inference & Deterministic Decoding](#4-inference--deterministic-decoding)
-5. [Codebase Analysis (`main.py`)](#5-codebase-analysis-newpy)
+5. [Codebase Analysis (`main.py`)](#5-codebase-analysis-mainpy)
 
 ---
 
 ## 1. System Architecture & Distributed Topology
 
-To train transfinite parameter vectors ($|\Theta| \gg 10^{11}$) without degradation, the system employs a synchronized, non-blocking 4D parallelized topology. 
+To facilitate the optimization of transfinite parameter vectors ($|\Theta| \gg 10^{11}$) without gradient degradation, KODA employs a synchronized, non-blocking 4D parallelized topology.
 
-### 1.1 Fully Sharded Data Parallelism (FSDP) and ZeRO-3
-The memory footprint of a massive model is sharded across the cluster. The theoretical peak memory $M_{peak}$ per GPU is bounded by:
+### 1.1 Fully Sharded Data Parallelism (FSDP)
+Memory overhead is sharded across the compute cluster using ZeRO-3 protocols. The peak memory consumption $M_{peak}$ per GPU node is strictly bounded:
 $$M_{peak} \approx \frac{\Phi_{Params}}{W} + \frac{\Phi_{Gradients}}{W} + \frac{\Phi_{States}}{K}$$
-Where $W$ is the world size and $K$ is the optimizer state sharding degree. This ensures absolute VRAM bounds are respected. During the forward pass, an asynchronous All-Gather primitive reconstructs the parameters layer-by-layer.
+Where $W$ represents the world size and $K$ denotes the optimizer state sharding degree. Layer-by-layer parameter reconstruction is achieved via asynchronous All-Gather primitives during the forward pass.
 
-**Tensor Decomposition:**
-To further reduce memory, the system employs Tucker decomposition for parameter tensor $\theta \in \mathbb{R}^{d_1 \times \dots \times d_k}$:
-$$\theta = \sum_{r_1=1}^{R_1} \dots \sum_{r_k=1}^{R_k} g_{r_1 \dots r_k} u_{i_1 r_1}^{(1)} \dots u_{i_k r_k}^{(k)}$$
-Where $g$ is the core tensor and $u$ are factor matrices.
-
-### 1.2 4D Hyper-Torus InfiniBand Topology
-The cluster is modeled as a Cartesian product of cycles $C_{d_1} \times C_{d_2} \times C_{d_3} \times C_{d_4}$. 
-Memory access latency over RDMA is modeled as:
+### 1.2 4D Hyper-Torus Topology
+The interconnect cluster is modeled as a Cartesian product of cycles $C_{d_1} \times C_{d_2} \times C_{d_3} \times C_{d_4}$. RDMA memory access latency is determined by:
 $$L_{mem} = \alpha + \beta \cdot d + \gamma \cdot q$$
-Where $\alpha$ is base latency, $\beta$ is per-hop cost, $d$ is the hop distance, and $\gamma \cdot q$ represents queueing delays.
-
-### 1.3 Fluid Queue Interconnect Dynamics
-Network congestion is modeled as a diffusion process. The queue length $Q$ satisfies an Ornstein-Uhlenbeck process:
-$$dQ = -\theta(Q - \mu)dt + \sigma dW$$
-Routing latency $L_{path}$ integrates this over the egress port queue depth:
-$$L_{path} = \int_{t_0}^{t_f} \left( \frac{Q_p(t)}{B} + \sigma \frac{dQ_p(t)}{dt} \right) dt$$
+Where $\alpha$ is base latency, $d$ is the hop distance, and $q$ represents the instantaneous queue depth.
 
 ---
 
-## 2. Optimization Manifold & K-FAC
+## 2. Optimization Manifold & Curvature Approximation
 
-### 2.1 Orthogonal Matrix Initialization
-Weight matrices are initialized using SVD to maintain the Marchenko-Pastur spectral distribution, preserving dynamic isometry (preventing vanishing/exploding gradients):
+### 2.1 Preserving Dynamic Isometry
+Weight matrices are initialized via Singular Value Decomposition (SVD) to adhere to the **Marchenko-Pastur** spectral distribution. This preserves dynamic isometry and ensures the Jacobian singular values remain proximate to unity, preventing gradient vanishing:
 $$\rho(\lambda) = \frac{1}{2\pi\sigma^2\lambda} \sqrt{(\lambda_+ - \lambda)(\lambda - \lambda_-)}$$
-This ensures the singular values of the input-output Jacobian remain near 1.
 
 ### 2.2 Kronecker-Factored Approximate Curvature (K-FAC)
-Second-order optimization is approximated using K-FAC. The Fisher Information Matrix $F$ is approximated as a Kronecker product:
+The engine approximates the Fisher Information Matrix $F$ as a Kronecker product to facilitate second-order optimization:
 $$F_{block} \approx E[aa^T] \otimes E[ss^T] = A \otimes S$$
-The natural gradient update $\Delta\Theta$ is:
-$$\Delta\Theta = \eta (A \otimes S)^{-1} \nabla_\Theta L = \eta (A^{-1} \otimes S^{-1}) \nabla_\Theta L$$
-
-**CUDA Kernel Implementation:**
-The provided custom PTX CUDA kernel performs the projection `grad_out = S_inv * grad_in * A_inv_T`. It leverages Tensor Cores via `wmma` (Warp Matrix Multiply Accumulate) and asynchronous DMA (`__pipeline_memcpy_async`) to hide memory latency behind compute.
+The resulting natural gradient update $\Delta\Theta$ is computed as:
+$$\Delta\Theta = \eta (A^{-1} \otimes S^{-1}) \nabla_\Theta L$$
 
 ---
 
-## 3. Epistemological Dataset Synthesis & Topological Embeddings
+## 3. Epistemological Synthesis & Topological Embeddings
 
-### 3.1 Hypergraph Representations and Hodge Theory
-To synthesize algorithmic datasets, Abstract Syntax Trees (ASTs) are modeled as hypergraphs. The combinatorial Hodge Laplacian $\Delta_k$ encodes topological features:
+### 3.1 Combinatorial Hodge Theory
+Algorithmic datasets are distilled into hypergraph representations. The **Hodge Laplacian** $\Delta_k$ is utilized to encode topological invariants:
 $$\Delta_k = d_{k-1}\delta_k + \delta_{k+1}d_k$$
-Betti numbers ($\beta_k = \dim \ker \Delta_k$) describe the "holes" in this manifold. Synthetic variations are generated by perturbing the Laplacian's eigenvalues while preserving these topological invariants.
+Betti numbers ($\beta_k = \dim \ker \Delta_k$) provide a formal description of the manifold's topology, ensuring that synthetic data perturbations maintain the logical consistency of the original source.
 
-### 3.2 Hyperbolic AST Embeddings
-Hierarchical structures like ASTs grow exponentially, making Euclidean space inadequate. The nodes are mapped to a Poincaré ball with the Riemannian metric tensor:
+### 3.2 Hyperbolic Manifold Mapping
+Given the exponential growth of hierarchical Abstract Syntax Trees (ASTs), KODA maps nodes to a Poincaré ball utilizing the Riemannian metric:
 $$g_{ij} = \frac{4}{(1 - \|x\|^2)^2} \delta_{ij}$$
-Hyperbolic distance calculates structural attention penalties:
+Structural attention is then weighted by the hyperbolic distance $d_H(i,j)$:
 $$d_H(i,j) = \text{arcosh}\left(1 + 2 \frac{\|i - j\|^2}{(1 - \|i\|^2)(1 - \|j\|^2)}\right)$$
 
 ---
@@ -93,72 +75,44 @@ $$d_H(i,j) = \text{arcosh}\left(1 + 2 \frac{\|i - j\|^2}{(1 - \|i\|^2)(1 - \|j\|
 ## 4. Inference & Deterministic Decoding
 
 ### 4.1 Contrastive Algorithmic Search
+To eliminate autoregressive stochastic drift, KODA implements a penalized search objective:
+$$v = \arg\max_{v \in V^{(k)}} \left\{ (1 - \alpha)\,\log P(v \mid x) - \alpha \left( \max_{h \in \mathrm{Context}} \cos(e_v, e_h) \right) \right\}$$
 
-To prevent standard autoregressive degeneration, inference employs a penalized beam search:
-
-$$
-v = \arg\max_{v \in V^{(k)}} \left\{
-(1 - \alpha)\,\log P(v \mid x)
-- \alpha \left( \max_{h \in \mathrm{Context}} \cos(e_v, e_h) \right)
-\right\}
-$$
-
-
-### 4.2 Asymptotic Bound Verification (Akra-Bazzi)
-Generated recursive code is formally verified using the generalized Akra-Bazzi method to guarantee algorithmic complexity:
-$$T(x) = g(x) + \sum_{i=1}^k a_i T(b_i x + h_i(x)) \implies T(x) = \Theta\left(x^p \left(1 + \int_1^x \frac{g(u)}{u^{p+1}} du \right)\right)$$
+### 4.2 Asymptotic Verification (Akra-Bazzi)
+Generated recursive logic is formally validated against the generalized **Akra-Bazzi** theorem to prove algorithmic complexity:
+$$T(x) = \Theta\left(x^p \left(1 + \int_1^x \frac{g(u)}{u^{p+1}} du \right)\right)$$
 
 ---
 
 ## 5. Codebase Analysis (`main.py`)
 
-The provided Python script is an end-to-end framework implementing the concepts above. It features a custom AST parser, a topological FSDP transformer, and a custom Actor-Critic reinforcement learning training loop.
+The `main.py` implementation serves as the foundational kernel for KODA, integrating a custom compiler frontend with a manifold-aware transformer architecture.
 
-### 5.1 Utilities and Trackers
-* `setseed(seed=42)`: Configures deterministic states across `random`, `numpy`, and `torch` (CUDA and CPU). Essential for distributed debugging.
-* `redmean(val, device)`: Safely averages a scalar metric across all distributed nodes using `dist.all_reduce`.
-* `Tracker`: Implements a running mean and variance estimator (like Adam's moments) used to normalize RL advantages (Standardizes rewards dynamically).
+* **Topological Compiler**: Features a recursive descent `Parser` and `Lexer` that bypasses standard libraries to generate custom `AstNode` hypergraphs.
+* **Eigenvalue Solver**: The `Graph` class computes the graph Laplacian of generated code and solves for its eigenvalues via `torch.linalg.eigvalsh` to verify structural coherence.
+* **Sparse Architecture**: Implements a Mixture of Experts (`MoE`) layer with Gumbel-Softmax routing and Rotary Position Embeddings (`RoPE`) for high-efficiency token processing.
+* **Custom Topology Optimizer**: The `Custom` optimizer class scales gradient updates based on a 4D hyper-torus routing simulation, ensuring that the optimization path is informed by the physical constraints of the distributed cluster.
+* **Hybrid Training Objective**: A unified `Trainer` that simultaneously optimizes for cross-entropy loss, hyperbolic distance in the Poincaré space, and a Wasserstein GAN gradient penalty to enforce a 1-Lipschitz constraint on the Critic network.
 
-### 5.2 Custom Compiler Frontend (`AstNode`, `Lexer`, `Parser`, `Emitter`)
-Instead of using Python's built-in `ast` module, a custom lexical analyzer and recursive descent parser are implemented.
-* `Lexer`: Tokenizes source code (bytes). Handles indentation tracking (crucial for Python via `indents` stack) and yields tokens (keywords, operators, literals).
-* `Parser`: Consumes tokens to build an `AstNode` tree. Follows standard operator precedence (`expr` -> `ternary` -> `addop` -> `mulop` -> `powop` -> `value`).
-* `Emitter`: Reconstructs valid Python code from the AST.
+---
 
-### 5.3 Graph Theory and Feature Extraction (`Graph`, `Feature`, `Solver`)
-* `Graph.solve()`: Constructs an adjacency matrix from the AST, calculates the graph Laplacian, and solves for its eigenvalues using `torch.linalg.eigvalsh`. Relates to the **Hodge Laplacian** topology mentioned in section 3.1.
-* `Feature.extract()`: Traverses the AST looking for arithmetic operators (`/`, `-`) to create a manually engineered heuristic feature vector.
-* `Solver.search()`: A gradient-descent based optimizer to solve a custom transcendental equation parameterized by the extracted AST features. It finds the root $p$ where $y = v_0 v_2^{-p} + v_1 v_3^{-p} - 1.0 = 0$.
+## 6. Development & Contribution
 
-### 5.4 Evaluator (`measure`, `execute`, `Sandbox`)
-* `measure(stra, strb)`: Computes the Levenshtein distance normalized to $[0, 1]$ to fuzzy-match generated outputs against target outputs.
-* `execute()`: A highly sandboxed `exec` wrapper utilizing `resource.setrlimit` to prevent infinite loops and memory exhaustion while evaluating generated code against test cases.
+KODA is an open-research initiative. We welcome contributions that advance the state of distributed neural-symbolic synthesis.
 
-### 5.5 Neural Architecture
-* `RMSNorm`: Root Mean Square Layer Normalization. More computationally efficient than standard LayerNorm.
-* `Rotary`: Rotary Position Embeddings (RoPE). Encodes positional info into attention queries and keys via complex rotation.
-* `Attn`: Standard Multi-Head Self Attention using PyTorch's optimized `scaled_dot_product_attention`.
-* `MoE` (Mixture of Experts): A sparse routing layer. Uses a linear gate to select the Top-$k$ ($k=2$) out of $n$ ($n=4$) MLP experts for each token.
-* `Block` & `Model`: The core Decoder-only Transformer combining Attn, MoE, and RMSNorm.
-* `Encoder`: An auxiliary 1D-CNN + Attention network. It processes token sequences into continuous embeddings and calculates attention eigenvalues, acting as the representation engine for the Wasserstein discriminator.
-* `Critic`: An MLP used to predict the value function $V(s)$ for the RL update.
+### 6.1 Core Dependencies
+The engine requires **Python 3.10+** and is optimized for the **PyTorch 2.10+** ecosystem.
 
-### 5.6 Topology & Custom Optimizer (`Topol`, `Custom`)
-* `Topol`: Simulates a 4D Hyper-Torus grid routing. Computes the all-pairs shortest path `spath` matrix.
-* `Custom`: A bespoke gradient descent optimizer. Instead of standard Adam, it applies topology-aware gradient perturbations. It modifies the gradient step $\text{grad} = (\text{grad} + \text{noise}) \cdot \frac{1}{1 + L_{path} \cdot 0.001}$, scaling updates by simulated network latency.
+| Dependency | Version (Min) | Purpose |
+| :--- | :--- | :--- |
+| `torch` | 2.10.0 | Core tensor computation and FSDP distributed backend. |
+| `torchvision` | 0.25.1 | Image processing primitives for multimodal variants. |
+| `numpy` | 1.26.0 | Numerical linear algebra and seed management. |
+| `CUDA` | 12.6+ | Hardware acceleration for high-dimensional parameter spaces. |
 
-### 5.7 The Training Loop (`Trainer`)
-* **Initialization**: Wraps the `Model`, `Encoder`, and `Critic` in `FullyShardedDataParallel` (FSDP) using FP16 mixed precision.
-* **Forward Pass**: Uses `autocast`. Calculates standard Cross-Entropy (`mloss`).
-* **Differentiable Sampling**: Uses Gumbel-Softmax (`ysamp = functional.gumbel_softmax`) to generate discrete tokens differentiably.
-* **Actor-Critic RL**: 
-    * Calculates a topological penalty `rcost` based on AST eigenvalues.
-    * Estimates distance `rscor` in the hyperbolic Poincaré space (`hpdist`).
-    * Calculates advantage `advan` by tracking exponential moving averages of rewards.
-    * Computes Policy Gradient loss `ploss = -(advan * log_probs)`.
-* **Wasserstein GAN Penalty**: When $lvw > 0$, it calculates a gradient penalty (`gpen`) to enforce the 1-Lipschitz constraint for the Critic, computing `qloss = -(creal - cfake) + 10 * gpen`.
-* **Optimization**: Averages gradients, clips norms, and steps both the main parameters and the Critic.
+### 6.2 Setup Environment
+To initialize a development environment with full CUDA support, execute the following:
+```bash
+pip3 install torch torchvision --index-url [https://download.pytorch.org/whl/cu126](https://download.pytorch.org/whl/cu126)
+pip install -r requirements.txt
 
-### 5.8 Dataloader & Execution
-* `Dataset`: Contains hardcoded recursive functions (e.g., Fibonacci, summations) to train the model on algorithmic complexity.
-* Sets up distributed environments, initializes the custom `Trainer`, and runs the hybrid CE-RL-GAN training loop.
