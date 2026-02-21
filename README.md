@@ -16,7 +16,9 @@ NEOX is intended for:
 
 - Experimental hybrid CE–RL–GAN training regimes for structured outputs
 
-The platform prioritizes memory efficiency, deterministic behavior under distributed execution, and mathematically grounded validation of generated artifacts.
+The platform prioritizes memory efficiency, deterministic behavior under distributed execution, and mathematically grounded validation of generated artifacts.It also uses a decoding method to prevent the models from giving bad answers. The system can even prove that the models will work correctly which is very important for computer systems.
+
+The NEOX system is designed for researchers who want to experiment with models. It is also designed for computer clusters that can handle a lot of data. NEOX brings together a few areas of computer science like distributed systems, math and program synthesis to create a unified system, for training models. The NEOX system is very powerful. Can help researchers create better models.
 
 ## Table of Contents
 1. [System Architecture & Distributed Topology](#1-system-architecture--distributed-topology)
