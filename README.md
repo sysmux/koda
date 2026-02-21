@@ -1,5 +1,22 @@
-# NEOX : NEOX: Neural Epistemological Optimization & X-Parallelism
-Is a Distributed Neural Re-Training & Code Generation Engine
+# NEOX : Networked Engine & Optimization eXchange, A Distributed Neural Re-Training & Code Generation Engine
+
+## Intended Purpose
+
+NEOX is designed as a distributed neural re-training and code generation engine for large-scale, algorithmically grounded models. Its primary objective is to enable efficient retraining, structural analysis, and deterministic inference over massive parameter spaces while preserving theoretical guarantees on optimization stability and computational complexity.
+
+The system integrates topology-aware distributed training, second-order optimization (K-FAC), and hypergraph-based dataset synthesis to produce models that are not only statistically performant but structurally coherent. Inference mechanisms incorporate contrastive penalization to reduce degeneration, while formal asymptotic verification (Akra–Bazzi) ensures generated recursive programs satisfy provable complexity bounds.
+
+NEOX is intended for:
+
+- Large-scale model retraining across distributed GPU clusters
+
+- Algorithmic code generation with structural and complexity guarantees
+
+- Research into topology-informed optimization and manifold-aware training
+
+- Experimental hybrid CE–RL–GAN training regimes for structured outputs
+
+The platform prioritizes memory efficiency, deterministic behavior under distributed execution, and mathematically grounded validation of generated artifacts.
 
 ## Table of Contents
 1. [System Architecture & Distributed Topology](#1-system-architecture--distributed-topology)
