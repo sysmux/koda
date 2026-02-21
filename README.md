@@ -78,12 +78,12 @@ $$d_H(i,j) = \text{arcosh}\left(1 + 2 \frac{\|i - j\|^2}{(1 - \|i\|^2)(1 - \|j\|
 To prevent standard autoregressive degeneration, inference employs a penalized beam search:
 
 $$
-v = \arg\max_{v \in V^{(k)}} \left\{ 
+v = \arg\max_{v \in V^{(k)}} \left\{
 (1 - \alpha)\,\log P(v \mid x)
-\;-\;
-\alpha \left( \max_{h \in \mathrm{Context}} \cos(e_v, e_h) \right)
+- \alpha \left( \max_{h \in \mathrm{Context}} \cos(e_v, e_h) \right)
 \right\}
 $$
+
 
 ### 4.2 Asymptotic Bound Verification (Akra-Bazzi)
 Generated recursive code is formally verified using the generalized Akra-Bazzi method to guarantee algorithmic complexity:
